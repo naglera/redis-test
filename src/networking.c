@@ -42,6 +42,7 @@ static void pauseClientsByClient(mstime_t end, int isPauseClientAll);
 int postponeClientRead(client *c);
 char *getClientSockname(client *c);
 int ProcessingEventsWhileBlocked = 0; /* See processEventsWhileBlocked(). */
+extern int isBugReportStart();
 
 /* Return the size consumed from the allocator, for the specified SDS string,
  * including internal fragmentation. This function is used in order to compute
@@ -2710,6 +2711,12 @@ char *getClientSockname(client *c) {
     return c->sockname;
 }
 
+int shouldHideClientInfo(){
+    if (!server.hide_client_info)
+        return 0;
+    return isBugReportStart();
+}
+
 /* Concatenate a string representing the state of a client in a human
  * readable format, into the sds string 's'. */
 sds catClientInfoString(sds s, client *client) {
@@ -2762,7 +2769,7 @@ sds catClientInfoString(sds s, client *client) {
         getClientPeerId(client),
         getClientSockname(client),
         connGetInfo(client->conn, conninfo, sizeof(conninfo)),
-        client->name ? (char*)client->name->ptr : "",
+        (client->name && !shouldHideClientInfo()) ? (char*)client->name->ptr : "",
         (long long)(server.unixtime - client->ctime),
         (long long)(server.unixtime - client->lastinteraction),
         flags,
