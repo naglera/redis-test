@@ -1026,7 +1026,7 @@ void _serverAssert(const char *estr, const char *file, int line) {
     bugReportEnd(0, 0);
 }
 
-/* Returns the amount of client's command arguments we allow loging */
+/* Returns the amount of client's command arguments we allow logging */
 int clientArgsToShow(const client *c) {
     if (server.hide_client_info) {
          return 1;
