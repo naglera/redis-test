@@ -1022,6 +1022,14 @@ void _serverAssert(const char *estr, const char *file, int line) {
     bugReportEnd(0, 0);
 }
 
+/* Returns the amount of client's command arguments we allow loging */
+int clientArgsToShow(const client *c) {
+    if (server.hide_client_info) {
+         return 1;
+    }
+    return c->argc;
+}
+
 void _serverAssertPrintClientInfo(const client *c) {
     int j;
     char conninfo[CONN_INFO_LEN];
@@ -1031,7 +1039,7 @@ void _serverAssertPrintClientInfo(const client *c) {
     serverLog(LL_WARNING,"client->flags = %llu", (unsigned long long) c->flags);
     serverLog(LL_WARNING,"client->conn = %s", connGetInfo(c->conn, conninfo, sizeof(conninfo)));
     serverLog(LL_WARNING,"client->argc = %d", c->argc);
-    for (j=0; j < c->argc; j++) {
+    for (j=0; j < clientArgsToShow(c); j++) {
         char buf[128];
         char *arg;
 
