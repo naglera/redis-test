@@ -316,10 +316,6 @@ void computeDatasetDigest(unsigned char *final) {
     }
 }
 
-int isBugReportStart(){
-    return bug_report_start == 1;
-}
-
 #ifdef USE_JEMALLOC
 void mallctl_int(client *c, robj **argv, int argc) {
     int ret;
@@ -1838,7 +1834,7 @@ void logCurrentClient(void) {
     client = catClientInfoString(sdsempty(),cc);
     serverLog(LL_WARNING|LL_RAW,"%s\n", client);
     sdsfree(client);
-    for (j = 0; j < clientArgsToShow(cc); j++) {
+    for (j = 0; j < cc->argc; j++) {
         robj *decoded;
         decoded = getDecodedObject(cc->argv[j]);
         sds repr = sdscatrepr(sdsempty(),decoded->ptr, min(sdslen(decoded->ptr), 128));
